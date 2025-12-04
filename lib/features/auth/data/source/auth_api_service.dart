@@ -1,0 +1,76 @@
+// lib/features/auth/data/source/auth_api_service.dart
+
+import 'package:rentverse/features/auth/data/models/request/login_request_model.dart';
+import 'package:rentverse/features/auth/data/models/request/register_request_model.dart';
+import 'package:rentverse/features/auth/data/models/response/login_response_model.dart';
+import 'package:rentverse/features/auth/data/models/response/user_model.dart';
+
+import '../../../../core/network/dio_client.dart';
+import '../../../../core/network/response/base_response_model.dart';
+
+// 1. KONTRAK
+abstract class AuthApiService {
+  Future<BaseResponseModel<LoginResponseModel>> login(LoginRequestModel body);
+  Future<BaseResponseModel<UserModel>> register(RegisterRequestModel body);
+  Future<BaseResponseModel<UserModel>> getProfile();
+}
+
+// 2. IMPLEMENTASI
+class AuthApiServiceImpl implements AuthApiService {
+  final DioClient _dioClient;
+
+  AuthApiServiceImpl(this._dioClient);
+
+  @override
+  Future<BaseResponseModel<LoginResponseModel>> login(
+    LoginRequestModel body,
+  ) async {
+    try {
+      final response = await _dioClient.post(
+        '/auth/login',
+        data: body.toJson(),
+      );
+
+      return BaseResponseModel.fromJson(
+        response.data,
+        (json) => LoginResponseModel.fromJson(
+          json as Map<String, dynamic>,
+        ), // Pakai wrapper
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<BaseResponseModel<UserModel>> register(
+    RegisterRequestModel body,
+  ) async {
+    try {
+      final response = await _dioClient.post(
+        '/auth/register',
+        data: body.toJson(),
+      );
+
+      return BaseResponseModel.fromJson(
+        response.data,
+        (json) => UserModel.fromJson(json as Map<String, dynamic>),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<BaseResponseModel<UserModel>> getProfile() async {
+    try {
+      final response = await _dioClient.get('/auth/me');
+      return BaseResponseModel.fromJson(
+        response.data,
+        (json) => UserModel.fromJson(json as Map<String, dynamic>),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
