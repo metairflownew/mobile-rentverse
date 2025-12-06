@@ -7,7 +7,7 @@ import 'package:rentverse/role/tenant/presentation/cubit/get_user/cubit.dart';
 import 'package:rentverse/role/tenant/presentation/cubit/get_user/state.dart';
 import 'package:rentverse/role/tenant/presentation/cubit/list_property/cubit.dart';
 import 'package:rentverse/role/tenant/presentation/widget/list_property.dart';
-import 'package:rentverse/role/tenant/presentation/widget/search_and_sort_widget.dart';
+import 'package:rentverse/role/tenant/presentation/widget/search_and_sort_widget_in_property.dart';
 
 class TenantPropertyPage extends StatelessWidget {
   const TenantPropertyPage({super.key});
@@ -50,7 +50,7 @@ class TenantPropertyPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      const SearchAndSortWidget(),
+                      const SearchAndSortWidgetForProperty(),
                       const SizedBox(height: 12),
                       const ListPropertyWidget(),
                     ],
