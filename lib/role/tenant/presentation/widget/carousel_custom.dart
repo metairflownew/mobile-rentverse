@@ -24,7 +24,7 @@ class CarouselCustom extends StatelessWidget {
                 itemBuilder: (context, index, realIndex) {
                   final imagePath = state.images[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.asset(

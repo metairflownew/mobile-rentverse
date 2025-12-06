@@ -12,6 +12,7 @@ import 'package:rentverse/features/auth/domain/usecase/get_local_user_usecase.da
 import 'package:rentverse/features/auth/domain/usecase/get_user_usecase.dart';
 import 'package:rentverse/features/auth/domain/usecase/is_logged_in_usecase.dart';
 import 'package:rentverse/features/auth/domain/usecase/login_usecase.dart';
+import 'package:rentverse/features/auth/domain/usecase/logout_usecase.dart';
 import 'package:rentverse/features/auth/domain/usecase/register_usecase.dart';
 import 'package:rentverse/features/auth/domain/repository/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,6 +45,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => LoginUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => RegisterUsecase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => GetUserUseCase(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => LogoutUseCase(sl<AuthRepository>()));
 
   // cubits
   sl.registerLazySingleton(() => AuthCubit());

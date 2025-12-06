@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rentverse/common/colors/custom_color.dart';
 import 'package:rentverse/core/services/service_locator.dart';
+import 'package:rentverse/features/auth/domain/usecase/logout_usecase.dart';
+import 'package:rentverse/common/bloc/auth/auth_cubit.dart';
 import 'package:rentverse/features/auth/presentation/cubit/profile/cubit.dart';
 import 'package:rentverse/features/auth/presentation/cubit/profile/state.dart';
 
@@ -67,17 +69,17 @@ class _ProfileView extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     _ProfileMenuCard(
-                      items: const [
-                        _ProfileMenuItem(
+                      items: [
+                        const _ProfileMenuItem(
                           icon: Icons.edit_outlined,
                           label: 'Edit Profile',
                           badgeCount: 3,
                         ),
-                        _ProfileMenuItem(
+                        const _ProfileMenuItem(
                           icon: Icons.star_outline,
                           label: 'Trust Index',
                         ),
-                        _ProfileMenuItem(
+                        const _ProfileMenuItem(
                           icon: Icons.location_on_outlined,
                           label: 'Address',
                         ),
@@ -85,16 +87,16 @@ class _ProfileView extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     _ProfileMenuCard(
-                      items: const [
-                        _ProfileMenuItem(
+                      items: [
+                        const _ProfileMenuItem(
                           icon: Icons.notifications_none,
                           label: 'Notifications',
                         ),
-                        _ProfileMenuItem(
+                        const _ProfileMenuItem(
                           icon: Icons.lock_outline,
                           label: 'Security',
                         ),
-                        _ProfileMenuItem(
+                        const _ProfileMenuItem(
                           icon: Icons.language,
                           label: 'Language',
                         ),
@@ -103,6 +105,12 @@ class _ProfileView extends StatelessWidget {
                           label: 'Logout',
                           iconColor: Colors.red,
                           valueColor: Colors.red,
+                          onTap: () async {
+                            await sl<LogoutUseCase>()();
+                            // refresh auth state so navigation reacts
+                            // ignore: use_build_context_synchronously
+                            context.read<AuthCubit>().checkAuthStatus();
+                          },
                         ),
                       ],
                     ),
@@ -264,6 +272,7 @@ class _ProfileMenuItem {
   final int? badgeCount;
   final Color? iconColor;
   final Color? valueColor;
+  final VoidCallback? onTap;
 
   const _ProfileMenuItem({
     required this.icon,
@@ -271,6 +280,7 @@ class _ProfileMenuItem {
     this.badgeCount,
     this.iconColor,
     this.valueColor,
+    this.onTap,
   });
 }
 
@@ -308,7 +318,7 @@ class _ProfileMenuTile extends StatelessWidget {
           const Icon(Icons.chevron_right, color: Colors.grey),
         ],
       ),
-      onTap: () {},
+      onTap: item.onTap,
     );
   }
 }
