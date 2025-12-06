@@ -1,9 +1,12 @@
+//lib/role/tenant/presentation/pages/property/detail_property.dart
+
 import 'package:flutter/material.dart';
 import 'package:rentverse/features/property/domain/entity/list_property_entity.dart';
 import 'package:rentverse/role/tenant/presentation/widget/detail_property/amenities_widget.dart';
 import 'package:rentverse/role/tenant/presentation/widget/detail_property/accessorise_widget.dart';
 import 'package:rentverse/role/tenant/presentation/widget/detail_property/image_tile.dart';
 import 'package:rentverse/role/tenant/presentation/widget/detail_property/owner_contact.dart';
+import 'package:rentverse/role/tenant/presentation/widget/detail_property/booking_button.dart';
 
 class DetailProperty extends StatelessWidget {
   const DetailProperty({super.key, required this.property});
@@ -58,14 +61,15 @@ class DetailProperty extends StatelessWidget {
                       property.description,
                       style: const TextStyle(fontSize: 13, height: 1.4),
                     ),
-                    const SizedBox(height: 8),
                     AmenitiesWidget(amenities: property.amenities),
                   ],
                 ),
               ),
+              const SizedBox(height: 80),
             ],
           ),
         ),
+        bottomNavigationBar: BookingButton(price: property.price),
       ),
     );
   }
