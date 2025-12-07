@@ -16,6 +16,14 @@ import 'package:rentverse/features/auth/domain/usecase/login_usecase.dart';
 import 'package:rentverse/features/auth/domain/usecase/logout_usecase.dart';
 import 'package:rentverse/features/auth/domain/usecase/register_usecase.dart';
 import 'package:rentverse/features/auth/domain/repository/auth_repository.dart';
+import 'package:rentverse/features/bookings/data/repository/bookings_repository_impl.dart';
+import 'package:rentverse/features/bookings/data/source/booking_api_service.dart';
+import 'package:rentverse/features/bookings/domain/repository/bookings_repository.dart';
+import 'package:rentverse/features/bookings/domain/usecase/create_booking_usecase.dart';
+import 'package:rentverse/features/rental/data/repository/rental_repository_impl.dart';
+import 'package:rentverse/features/rental/data/source/rental_api_service.dart';
+import 'package:rentverse/features/rental/domain/repository/rental_repository.dart';
+import 'package:rentverse/features/rental/domain/usecase/get_rent_references_usecase.dart';
 import 'package:rentverse/features/property/data/repository/property_repository_impl.dart';
 import 'package:rentverse/features/property/data/source/property_api_service.dart';
 import 'package:rentverse/features/property/domain/repository/property_repository.dart';
@@ -53,6 +61,18 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<PropertyRepository>(
     () => PropertyRepositoryImpl(sl<PropertyApiService>()),
   );
+  sl.registerLazySingleton<BookingApiService>(
+    () => BookingApiServiceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<BookingsRepository>(
+    () => BookingsRepositoryImpl(sl<BookingApiService>()),
+  );
+  sl.registerLazySingleton<RentalApiService>(
+    () => RentalApiServiceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<RentalRepository>(
+    () => RentalRepositoryImpl(sl<RentalApiService>()),
+  );
 
   // Auth usecases
   sl.registerLazySingleton(() => GetLocalUserUseCase(sl<AuthRepository>()));
@@ -64,6 +84,13 @@ Future<void> setupServiceLocator() async {
   // Property usecases
   sl.registerLazySingleton(
     () => GetPropertiesUseCase(sl<PropertyRepository>()),
+  );
+  // Booking usecases
+  sl.registerLazySingleton(
+    () => CreateBookingUseCase(sl<BookingsRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetRentReferencesUseCase(sl<RentalRepository>()),
   );
 
   // cubits

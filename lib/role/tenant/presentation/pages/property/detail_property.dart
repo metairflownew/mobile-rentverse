@@ -7,6 +7,7 @@ import 'package:rentverse/role/tenant/presentation/widget/detail_property/access
 import 'package:rentverse/role/tenant/presentation/widget/detail_property/image_tile.dart';
 import 'package:rentverse/role/tenant/presentation/widget/detail_property/owner_contact.dart';
 import 'package:rentverse/role/tenant/presentation/widget/detail_property/booking_button.dart';
+import 'package:rentverse/role/tenant/presentation/pages/property/booking_property.dart';
 
 class DetailProperty extends StatelessWidget {
   const DetailProperty({super.key, required this.property});
@@ -69,7 +70,16 @@ class DetailProperty extends StatelessWidget {
             ],
           ),
         ),
-        bottomNavigationBar: BookingButton(price: property.price),
+        bottomNavigationBar: BookingButton(
+          price: property.price,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BookingPropertyPage(property: property),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
