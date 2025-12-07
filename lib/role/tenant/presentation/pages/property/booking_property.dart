@@ -21,7 +21,9 @@ class BookingPropertyPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => BookingCubit(sl(), sl())..loadBillingPeriods(),
+          create: (_) =>
+              BookingCubit(sl(), sl())
+                ..initBillingPeriods(property.allowedBillingPeriods),
         ),
         BlocProvider(create: (_) => GetUserCubit(sl(), sl())..load()),
       ],

@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:rentverse/features/bookings/domain/entity/req/request_booking_entity.dart';
 import 'package:rentverse/features/bookings/domain/usecase/create_booking_usecase.dart';
+import 'package:rentverse/features/property/domain/entity/list_property_entity.dart';
+import 'package:rentverse/features/rental/domain/entity/rent_references_entity_response.dart';
 import 'package:rentverse/features/rental/domain/usecase/get_rent_references_usecase.dart';
 import 'package:rentverse/role/tenant/presentation/cubit/booking/state.dart';
 
@@ -41,6 +43,37 @@ class BookingCubit extends Cubit<BookingState> {
       Logger().e('Failed to load billing periods', error: e);
       emit(state.copyWith(isBillingPeriodsLoading: false, error: e.toString()));
     }
+  }
+
+  Future<void> initBillingPeriods(
+    List<AllowedBillingPeriodEntity> allowed,
+  ) async {
+    if (allowed.isNotEmpty) {
+      final periods = allowed
+          .map(
+            (e) => BillingPeriodEntity(
+              id: e.billingPeriod.id,
+              slug: e.billingPeriod.slug,
+              label: e.billingPeriod.label,
+              durationMonths: e.billingPeriod.durationMonths,
+            ),
+          )
+          .toList();
+      final selectedId = periods.first.id;
+      Logger().i(
+        'Using allowed billing periods from property (${periods.length}): ${periods.map((p) => '${p.id}-${p.label}-${p.durationMonths}').join(', ')} | selectedId=$selectedId',
+      );
+      emit(
+        state.copyWith(
+          isBillingPeriodsLoading: false,
+          billingPeriods: periods,
+          billingPeriodId: selectedId,
+        ),
+      );
+      return;
+    }
+
+    await loadBillingPeriods();
   }
 
   void setBillingPeriod(int id) {
