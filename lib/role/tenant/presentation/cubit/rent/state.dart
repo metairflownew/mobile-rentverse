@@ -8,6 +8,10 @@ class RentState {
   final List<BookingListItemEntity> active;
   final List<BookingListItemEntity> completed;
   final List<BookingListItemEntity> cancelled;
+  final List<BookingListItemEntity> paymentPending;
+  final List<BookingListItemEntity> paymentPaid;
+  final List<BookingListItemEntity> paymentOverdue;
+  final List<BookingListItemEntity> paymentCanceled;
   final bool hasMore;
   final String? nextCursor;
 
@@ -19,6 +23,10 @@ class RentState {
     this.active = const [],
     this.completed = const [],
     this.cancelled = const [],
+    this.paymentPending = const [],
+    this.paymentPaid = const [],
+    this.paymentOverdue = const [],
+    this.paymentCanceled = const [],
     this.hasMore = false,
     this.nextCursor,
   });
@@ -31,6 +39,10 @@ class RentState {
     List<BookingListItemEntity>? active,
     List<BookingListItemEntity>? completed,
     List<BookingListItemEntity>? cancelled,
+    List<BookingListItemEntity>? paymentPending,
+    List<BookingListItemEntity>? paymentPaid,
+    List<BookingListItemEntity>? paymentOverdue,
+    List<BookingListItemEntity>? paymentCanceled,
     bool? hasMore,
     String? nextCursor,
     bool resetError = false,
@@ -43,6 +55,10 @@ class RentState {
       active: active ?? this.active,
       completed: completed ?? this.completed,
       cancelled: cancelled ?? this.cancelled,
+      paymentPending: paymentPending ?? this.paymentPending,
+      paymentPaid: paymentPaid ?? this.paymentPaid,
+      paymentOverdue: paymentOverdue ?? this.paymentOverdue,
+      paymentCanceled: paymentCanceled ?? this.paymentCanceled,
       hasMore: hasMore ?? this.hasMore,
       nextCursor: nextCursor ?? this.nextCursor,
     );

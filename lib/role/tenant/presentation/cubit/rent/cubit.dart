@@ -25,6 +25,11 @@ class RentCubit extends Cubit<RentState> {
       final completed = _filterByStatus(res.items, 'COMPLETED');
       final cancelled = _filterByStatus(res.items, 'CANCELLED');
 
+      final paymentPending = _filterByPaymentStatus(res.items, 'PENDING');
+      final paymentPaid = _filterByPaymentStatus(res.items, 'PAID');
+      final paymentOverdue = _filterByPaymentStatus(res.items, 'OVERDUE');
+      final paymentCanceled = _filterByPaymentStatus(res.items, 'CANCELED');
+
       emit(
         state.copyWith(
           isLoading: false,
@@ -32,6 +37,10 @@ class RentCubit extends Cubit<RentState> {
           active: active,
           completed: completed,
           cancelled: cancelled,
+          paymentPending: paymentPending,
+          paymentPaid: paymentPaid,
+          paymentOverdue: paymentOverdue,
+          paymentCanceled: paymentCanceled,
           hasMore: res.meta.hasMore,
           nextCursor: res.meta.nextCursor,
         ),
@@ -60,5 +69,12 @@ class RentCubit extends Cubit<RentState> {
     String status,
   ) {
     return items.where((e) => e.status == status).toList();
+  }
+
+  List<BookingListItemEntity> _filterByPaymentStatus(
+    List<BookingListItemEntity> items,
+    String status,
+  ) {
+    return items.where((e) => e.payment.status == status).toList();
   }
 }
