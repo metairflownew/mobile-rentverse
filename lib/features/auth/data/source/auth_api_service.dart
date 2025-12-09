@@ -1,5 +1,7 @@
 // lib/features/auth/data/source/auth_api_service.dart
 
+import 'dart:developer' as developer;
+
 import 'package:rentverse/features/auth/data/models/request/login_request_model.dart';
 import 'package:rentverse/features/auth/data/models/request/register_request_model.dart';
 import 'package:rentverse/features/auth/data/models/request/update_profile_request_model.dart';
@@ -69,6 +71,13 @@ class AuthApiServiceImpl implements AuthApiService {
   Future<BaseResponseModel<UserModel>> getProfile() async {
     try {
       final response = await _dioClient.get('/auth/me');
+
+      // Debug log raw payload for trust index debugging
+      developer.log(
+        'GET /auth/me raw response: ${response.data}',
+        name: 'AuthApiService',
+      );
+
       return BaseResponseModel.fromJson(
         response.data,
         (json) => UserModel.fromJson(json as Map<String, dynamic>),

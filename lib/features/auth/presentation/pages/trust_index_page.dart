@@ -1,8 +1,11 @@
 import 'dart:math' as math;
 
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rentverse/common/bloc/auth/auth_cubit.dart';
+import 'package:rentverse/common/bloc/auth/auth_state.dart';
 import 'package:rentverse/common/colors/custom_color.dart';
 import 'package:rentverse/features/auth/presentation/cubit/trust_index/cubit.dart';
 import 'package:rentverse/features/auth/presentation/cubit/trust_index/state.dart';
@@ -16,6 +19,44 @@ class TrustIndexPage extends StatelessWidget {
       create: (_) {
         final cubit = TrustIndexCubit();
         cubit.loadFromAuthState(context.read<AuthCubit>().state);
+
+        // Log current auth/me fetch for debugging
+        try {
+          final authState = context.read<AuthCubit>().state;
+          if (authState is Authenticated) {
+            final user = authState.user;
+            developer.log(
+              'TrustIndex - fetched auth/me',
+              name: 'TrustIndexPage',
+            );
+            developer.log('user.id: ${user.id}', name: 'TrustIndexPage');
+            developer.log(
+              'roles: ${user.roles?.map((r) => r.role?.name).toList()}',
+              name: 'TrustIndexPage',
+            );
+            developer.log(
+              'tenant.ttiScore: ${user.tenantProfile?.ttiScore}',
+              name: 'TrustIndexPage',
+            );
+            developer.log(
+              'landlord.lrsScore: ${user.landlordProfile?.lrsScore}',
+              name: 'TrustIndexPage',
+            );
+          } else {
+            developer.log(
+              'Auth state (not authenticated): $authState',
+              name: 'TrustIndexPage',
+            );
+          }
+        } catch (e, st) {
+          developer.log(
+            'Error while logging auth state: $e',
+            name: 'TrustIndexPage',
+            error: e,
+            stackTrace: st,
+          );
+        }
+
         return cubit;
       },
       child: Scaffold(
@@ -222,10 +263,7 @@ class _ReviewsHeader extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {},
-          child: Text(
-            'View All',
-            style: TextStyle(color: appPrimaryColor),
-          ),
+          child: Text('View All', style: TextStyle(color: appPrimaryColor)),
         ),
       ],
     );

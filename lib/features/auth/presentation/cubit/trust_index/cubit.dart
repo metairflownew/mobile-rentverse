@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rentverse/common/bloc/auth/auth_state.dart';
 import 'package:rentverse/features/auth/domain/entity/user_entity.dart';
@@ -10,7 +12,20 @@ class TrustIndexCubit extends Cubit<TrustIndexState> {
     if (authState is! Authenticated) return;
 
     final UserEntity user = authState.user;
-    final double score = user.tenantProfile?.ttiScore ?? 0;
+    // Role-aware scoring: tenant uses TTI, landlord uses LRS. If both roles exist, prefer tenant TTI unless it's missing.
+    final double score;
+    if (user.isTenant) {
+      score = user.tenantProfile?.ttiScore ?? 0;
+    } else if (user.isLandlord) {
+      score = user.landlordProfile?.lrsScore ?? 0;
+    } else {
+      score = 0;
+    }
+
+    developer.log(
+      'TrustIndexCubit computed score=$score (isTenant=${user.isTenant}, isLandlord=${user.isLandlord}, tti=${user.tenantProfile?.ttiScore}, lrs=${user.landlordProfile?.lrsScore})',
+      name: 'TrustIndex',
+    );
 
     // Placeholder review stats; can be replaced when API available.
     const double avgRating = 4.5;
