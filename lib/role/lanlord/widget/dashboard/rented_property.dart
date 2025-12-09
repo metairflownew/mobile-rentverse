@@ -55,7 +55,20 @@ class _RentedCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundImage: NetworkImage(item.renterAvatarUrl),
+                backgroundColor: Colors.grey.shade200,
+                child: ClipOval(
+                  child: Image.network(
+                    item.renterAvatarUrl,
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.person,
+                      color: Colors.grey.shade500,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(width: 10),
               Column(
@@ -92,6 +105,12 @@ class _RentedCard extends StatelessWidget {
                   width: 120,
                   height: 90,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 120,
+                    height: 90,
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),

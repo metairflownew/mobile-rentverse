@@ -11,6 +11,9 @@ import 'package:rentverse/features/auth/domain/usecase/get_local_user_usecase.da
 import 'package:intl/intl.dart';
 import 'package:rentverse/common/colors/custom_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rentverse/role/lanlord/presentation/cubit/property/cubit.dart';
+import 'package:rentverse/role/lanlord/presentation/cubit/property/state.dart';
+import 'package:rentverse/common/utils/network_utils.dart';
 import 'package:rentverse/common/widget/pull_to_refresh.dart';
 import 'package:rentverse/role/lanlord/presentation/cubit/dashboard/landlord_dashboard_cubit.dart';
 import 'package:rentverse/role/lanlord/presentation/cubit/dashboard/landlord_dashboard_state.dart';
@@ -25,11 +28,16 @@ class LandlordDashboardPage extends StatefulWidget {
 class _LandlordDashboardPageState extends State<LandlordDashboardPage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => LandlordDashboardCubit(
-        sl<GetLocalUserUseCase>(),
-        sl<GetLandlordDashboardUseCase>(),
-      )..load(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => LandlordDashboardCubit(
+            sl<GetLocalUserUseCase>(),
+            sl<GetLandlordDashboardUseCase>(),
+          )..load(),
+        ),
+        BlocProvider(create: (_) => LandlordPropertyCubit(sl())..load()),
+      ],
       child: _LandlordDashboardView(),
     );
   }
@@ -114,40 +122,80 @@ class _LandlordDashboardView extends StatelessWidget {
           YourTrustIndex(score: (overview?.trust.score ?? 0).toDouble()),
           const SizedBox(height: 16),
           const SizedBox(height: 16),
-          PropertyBeingProposed(
-            items: const [
-              PropertyProposal(
-                title: 'Joane Residence',
-                city: 'Kuala Lumpur',
-                status: 'Waiting',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
-              ),
-              PropertyProposal(
-                title: 'Joane Residence',
-                city: 'Kuala Lumpur',
-                status: 'Waiting',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80',
-              ),
-            ],
+          // Property Being Proposed - sourced from landlord properties API
+          BlocBuilder<LandlordPropertyCubit, LandlordPropertyState>(
+            builder: (context, propsState) {
+              if (propsState.status == LandlordPropertyStatus.loading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (propsState.status == LandlordPropertyStatus.failure) {
+                return Center(child: Text('Failed to load properties'));
+              }
+
+              final proposed = propsState.items
+                  .where((p) => p.isVerified == false)
+                  .toList();
+
+              if (proposed.isEmpty) {
+                return const SizedBox();
+              }
+
+              return PropertyBeingProposed(
+                items: proposed
+                    .map(
+                      (p) => PropertyProposal(
+                        title: p.title,
+                        city: p.city,
+                        imageUrl:
+                            makeDeviceAccessibleUrl(p.image) ??
+                            'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
+                        status: 'Waiting',
+                        statusBackground: Colors.orange,
+                      ),
+                    )
+                    .toList(),
+              );
+            },
           ),
           const SizedBox(height: 16),
-          RentedProperty(
-            items: const [
-              RentedItem(
-                renterName: 'Renata',
-                renterAvatarUrl:
-                    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80',
-                title: 'Joane Residence',
-                city: 'Kuala Lumpur',
-                startDate: '28/12/2025',
-                endDate: '30/12/2025',
-                duration: '2 Days',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
-              ),
-            ],
+          // Rented properties - show properties with bookings (api-driven)
+          BlocBuilder<LandlordPropertyCubit, LandlordPropertyState>(
+            builder: (context, propsState) {
+              if (propsState.status == LandlordPropertyStatus.loading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (propsState.status == LandlordPropertyStatus.failure) {
+                return Center(child: Text('Failed to load properties'));
+              }
+
+              final rented = propsState.items
+                  .where((p) => p.stats.totalBookings > 0)
+                  .toList();
+
+              if (rented.isEmpty) return const SizedBox();
+
+              return RentedProperty(
+                items: rented
+                    .map(
+                      (p) => RentedItem(
+                        renterName: '—',
+                        renterAvatarUrl:
+                            'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80',
+                        title: p.title,
+                        city: p.city,
+                        startDate: p.createdAt != null
+                            ? DateFormat('dd/MM/yyyy').format(p.createdAt!)
+                            : '-',
+                        endDate: '-',
+                        duration: '${p.stats.totalBookings} bookings',
+                        imageUrl:
+                            makeDeviceAccessibleUrl(p.image) ??
+                            'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
+                      ),
+                    )
+                    .toList(),
+              );
+            },
           ),
         ],
       ),
