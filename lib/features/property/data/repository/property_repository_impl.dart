@@ -1,4 +1,5 @@
 import 'package:rentverse/features/property/data/source/property_api_service.dart';
+import 'package:rentverse/features/property/domain/entity/list_property_by_owner.dart';
 import 'package:rentverse/features/property/domain/entity/list_property_entity.dart';
 import 'package:rentverse/features/property/domain/repository/property_repository.dart';
 
@@ -6,6 +7,18 @@ class PropertyRepositoryImpl implements PropertyRepository {
   final PropertyApiService _apiService;
 
   PropertyRepositoryImpl(this._apiService);
+
+  @override
+  Future<ListPropertyByOwnerEntity> getLandlordProperties({
+    int? limit,
+    String? cursor,
+  }) async {
+    final response = await _apiService.getLandlordProperties(
+      limit: limit,
+      cursor: cursor,
+    );
+    return response.toEntity();
+  }
 
   @override
   Future<ListPropertyEntity> getProperties({int? limit, String? cursor}) async {

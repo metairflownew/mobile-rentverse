@@ -13,7 +13,7 @@ import 'package:rentverse/features/auth/presentation/pages/auth_pages.dart';
 import 'package:rentverse/features/auth/presentation/pages/profile_pages.dart';
 import 'package:rentverse/role/lanlord/presentation/pages/chat.dart';
 import 'package:rentverse/role/lanlord/presentation/pages/dashboard.dart';
-import 'package:rentverse/role/lanlord/presentation/pages/history.dart';
+import 'package:rentverse/role/lanlord/presentation/pages/property.dart';
 import 'package:rentverse/role/tenant/presentation/pages/nav/chat.dart';
 import 'package:rentverse/role/tenant/presentation/pages/nav/home.dart';
 import 'package:rentverse/role/tenant/presentation/pages/property/property.dart';
@@ -78,7 +78,7 @@ _NavigationConfig _buildNavigationConfig(UserEntity user) {
     return _NavigationConfig(
       pages: const [
         LandlordDashboardPage(),
-        LandlordHistoryPage(),
+        LandlordPropertyPage(),
         LandlordChatPage(),
         ProfilePage(),
       ],
@@ -89,9 +89,9 @@ _NavigationConfig _buildNavigationConfig(UserEntity user) {
           label: 'Dashboard',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.history, color: Colors.grey),
-          activeIcon: GradientIcon(icon: Icons.history),
-          label: 'History',
+          icon: Icon(Icons.apartment, color: Colors.grey),
+          activeIcon: GradientIcon(icon: Icons.apartment),
+          label: 'Property',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat, color: Colors.grey),
